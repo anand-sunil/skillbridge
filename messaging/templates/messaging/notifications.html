@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Notifications | SkillBridge{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8 min-h-screen">
+
+    <!-- HEADER -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Notifications</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">Stay updated with your latest activity</p>
+        </div>
+
+        <!-- Optional: Mark all read button (logic happens on view load anyway, but visual cue is nice) -->
+        <button class="text-sm text-blue-600 dark:text-blue-400 font-medium hover:underline">
+            Mark all as read
+        </button>
+    </div>
+
+    <!-- NOTIFICATIONS LIST -->
+    <div
+        class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-700">
+        <ul class="divide-y divide-gray-100 dark:divide-gray-700">
+            {% for note in notifications %}
+            <li class="relative group hover:bg-gray-50 dark:hover:bg-gray-700/50 transition duration-150 ease-in-out">
+                <a href="{{ note.url|default:'#' }}" class="block p-6">
+                    <div class="flex items-start gap-4">
+
+                        <!-- ICON based on Content (Heuristic) -->
+                        <div class="flex-shrink-0">
+                            {% if "application" in note.message|lower %}
+                            <div
+                                class="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 flex items-center justify-center">
+                                <i class="fa-solid fa-briefcase"></i>
+                            </div>
+                            {% elif "message" in note.message|lower %}
+                            <div
+                                class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                                <i class="fa-solid fa-comment-dots"></i>
+                            </div>
+                            {% else %}
+                            <div
+                                class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 flex items-center justify-center">
+                                <i class="fa-regular fa-bell"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- CONTENT -->
+                        <div class="flex-1 min-w-0">
+                            <p
+                                class="text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
+                                {{ note.message }}
+                            </p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                {{ note.created_at|date:"M d, Y • h:i A" }}
+                            </p>
+                        </div>
+
+                        <!-- UNREAD INDICATOR (If logic supported strictly unread view, but view clears it. Keeping for visual structure) -->
+                        <div
+                            class="text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition transform">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </div>
+
+                    </div>
+                </a>
+            </li>
+            {% empty %}
+            <!-- EMPTY STATE -->
+            <li class="p-12 text-center flex flex-col items-center justify-center">
+                <div
+                    class="w-20 h-20 bg-gray-50 dark:bg-gray-700/50 rounded-full flex items-center justify-center mb-4">
+                    <i class="fa-regular fa-bell-slash text-3xl text-gray-400 dark:text-gray-500"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">No notifications yet</h3>
+                <p class="text-gray-500 dark:text-gray-400 text-sm mt-1 max-w-xs">
+                    We'll notify you when you receive a message or an update on your job applications.
+                </p>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

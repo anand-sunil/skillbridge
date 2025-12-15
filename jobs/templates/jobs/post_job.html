@@ -1,0 +1,128 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post a Job - SkillBridge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn .6s ease-out;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-blue-500 via-indigo-600 to-violet-700">
+
+    <!-- Center Container -->
+    <div class="max-w-3xl mx-auto py-16 px-6 fade-in">
+
+        <!-- Header -->
+        <h1 class="text-4xl font-bold text-white text-center mb-6">
+            {% if job %}Edit Job{% else %}Post a New Job{% endif %}
+        </h1>
+
+        <p class="text-center text-blue-100 mb-10">
+            Fill in the details below to publish your job listing.
+        </p>
+
+        <!-- Job Form -->
+        <div class="glass p-8 rounded-2xl shadow-xl">
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <!-- Job Title -->
+                <label class="text-white font-semibold">Job Title</label>
+                <input type="text" name="title" id="title" value="{{ job.title|default:'' }}"
+                    class="w-full mt-2 mb-5 px-4 py-3 bg-white/20 border-white/30 border rounded-xl text-white focus:ring-2 focus:ring-blue-300 outline-none"
+                    placeholder="Example: Full Stack Developer" required>
+
+                <!-- Description -->
+                <label class="text-white font-semibold">Description</label>
+                <textarea name="description" id="description"
+                    class="w-full mt-2 mb-5 px-4 py-3 bg-white/20 border-white/30 border rounded-xl text-white focus:ring-2 focus:ring-blue-300 outline-none"
+                    rows="5" placeholder="Describe the job role, responsibilities, etc."
+                    required>{{ job.description|default:'' }}</textarea>
+
+                <!-- Location -->
+                <label class="text-white font-semibold">Location</label>
+                <input type="text" name="location" id="location" value="{{ job.location|default:'' }}"
+                    class="w-full mt-2 mb-5 px-4 py-3 bg-white/20 border-white/30 border rounded-xl text-white focus:ring-2 focus:ring-blue-300 outline-none"
+                    placeholder="City, Country" required>
+
+                <!-- Salary -->
+                <label class="text-white font-semibold">Salary (Optional)</label>
+                <input type="number" name="salary" id="salary" value="{{ job.salary|default:'' }}"
+                    class="w-full mt-2 mb-5 px-4 py-3 bg-white/20 border-white/30 border rounded-xl text-white focus:ring-2 focus:ring-blue-300 outline-none"
+                    placeholder="Example: 35000">
+
+                <!-- Deadline -->
+                <label class="text-white font-semibold">Application Deadline</label>
+                <input type="date" name="deadline" id="deadline" value="{{ job.deadline|date:'Y-m-d'|default:'' }}"
+                    class="w-full mt-2 mb-8 px-4 py-3 bg-white/20 border-white/30 border rounded-xl text-white focus:ring-2 focus:ring-blue-300 outline-none">
+
+                <!-- Submit -->
+                <button type="submit"
+                    class="w-full py-3 bg-gradient-to-r from-blue-600 to-violet-600 text-white font-semibold rounded-xl hover:scale-105 transition">
+                    {% if job %}Update Job{% else %}Post Job{% endif %}
+                </button>
+            </form>
+        </div>
+
+        <!-- Live Preview -->
+        <h2 class="text-white text-2xl font-bold mt-12 mb-3">Live Preview</h2>
+        <div class="glass p-6 rounded-xl shadow-xl text-white" id="previewBox">
+            <h3 class="text-xl font-bold" id="previewTitle">Job Title</h3>
+            <p class="mt-2 text-blue-100" id="previewDescription">Job description will appear here...</p>
+            <p class="mt-2"><b>Location:</b> <span id="previewLocation">N/A</span></p>
+            <p class="mt-1"><b>Salary:</b> <span id="previewSalary">Not specified</span></p>
+        </div>
+
+    </div>
+
+
+    <script>
+        // LIVE PREVIEW SCRIPT
+        document.getElementById("title").addEventListener("input", e => {
+            document.getElementById("previewTitle").innerText = e.target.value || "Job Title";
+        });
+
+        document.getElementById("description").addEventListener("input", e => {
+            document.getElementById("previewDescription").innerText = e.target.value || "Job description will appear here...";
+        });
+
+        document.getElementById("location").addEventListener("input", e => {
+            document.getElementById("previewLocation").innerText = e.target.value || "N/A";
+        });
+
+        document.getElementById("salary").addEventListener("input", e => {
+            document.getElementById("previewSalary").innerText = e.target.value ? e.target.value + " / month" : "Not specified";
+        });
+    </script>
+
+</body>
+
+</html>

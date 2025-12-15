@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Choose Plan | SkillBridge{% endblock %}
+
+{% block content %}
+
+<style>
+    .glass {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+</style>
+
+<!-- HEADER -->
+<div class="pt-10 text-center">
+    <h1 class="text-4xl font-bold text-gray-900 dark:text-white">
+        Choose Your Listing Plan
+    </h1>
+    <p class="text-gray-600 dark:text-gray-300 mt-3">
+        Promote your course and reach more learners
+    </p>
+</div>
+
+<!-- PRICING CARDS -->
+<div class="max-w-6xl mx-auto mt-12 grid md:grid-cols-3 gap-8">
+
+    <!-- BASIC -->
+    <div class="glass rounded-3xl p-8 shadow-xl text-center hover:scale-105 transition">
+        <h2 class="text-2xl font-bold dark:text-white">Basic</h2>
+        <p class="text-gray-500 dark:text-gray-400 mt-2">7 Days Visibility</p>
+
+        <div class="text-4xl font-bold text-blue-600 dark:text-blue-400 mt-4">₹499</div>
+
+        <ul class="mt-6 text-gray-700 dark:text-gray-300 space-y-2">
+            <li>✔ Listed on course page</li>
+            <li>✔ Search visibility</li>
+            <li>✖ No homepage highlight</li>
+        </ul>
+
+        <form method="POST" action="{% url 'payment_checkout' course.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="plan" value="7">
+            <button type="submit"
+                class="mt-6 w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition">
+                Choose Plan
+            </button>
+        </form>
+    </div>
+
+    <!-- STANDARD -->
+    <div class="glass rounded-3xl p-8 shadow-2xl text-center border-2 border-violet-600 dark:border-violet-500">
+        <h2 class="text-2xl font-bold dark:text-white">Standard</h2>
+        <p class="text-gray-500 dark:text-gray-400 mt-2">15 Days Visibility</p>
+
+        <div class="text-4xl font-bold text-violet-600 dark:text-violet-400 mt-4">₹899</div>
+
+        <ul class="mt-6 text-gray-700 dark:text-gray-300 space-y-2">
+            <li>✔ Listed on course page</li>
+            <li>✔ Higher search priority</li>
+            <li>✔ Homepage carousel</li>
+        </ul>
+
+        <form method="POST" action="{% url 'payment_checkout' course.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="plan" value="15">
+            <button type="submit"
+                class="mt-6 w-full py-3 bg-violet-600 text-white rounded-xl font-semibold hover:bg-violet-700 transition">
+                Choose Plan
+            </button>
+        </form>
+    </div>
+
+    <!-- PREMIUM -->
+    <div class="glass rounded-3xl p-8 shadow-xl text-center hover:scale-105 transition">
+        <h2 class="text-2xl font-bold dark:text-white">Premium</h2>
+        <p class="text-gray-500 dark:text-gray-400 mt-2">30 Days Visibility</p>
+
+        <div class="text-4xl font-bold text-green-600 dark:text-green-400 mt-4">₹1499</div>
+
+        <ul class="mt-6 text-gray-700 dark:text-gray-300 space-y-2">
+            <li>✔ Top featured course</li>
+            <li>✔ Homepage banner</li>
+            <li>✔ Maximum reach</li>
+        </ul>
+
+        <form method="POST" action="{% url 'payment_checkout' course.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="plan" value="30">
+            <button type="submit"
+                class="mt-6 w-full py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition">
+                Choose Plan
+            </button>
+        </form>
+    </div>
+
+</div>
+
+<!-- FOOTNOTE -->
+<div class="mt-12 text-center text-gray-500 dark:text-gray-400 text-sm">
+    Payments are secure. Courses will be visible immediately after payment confirmation.
+</div>
+
+{% endblock %}

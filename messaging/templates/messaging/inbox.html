@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Messages | SkillBridge{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-[calc(100vh-6rem)] flex flex-col">
+
+  <!-- HEADER & SEARCH -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pt-6">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Messages</h1>
+
+    <!-- Search Bar (Visual Only) -->
+    <div class="relative w-full md:w-96">
+      <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+      </span>
+      <input type="text" placeholder="Search messages..."
+        class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl leading-5 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition sm:text-sm shadow-sm">
+    </div>
+  </div>
+
+  <!-- CONVERSATIONS LIST -->
+  <div
+    class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden flex-1 border border-gray-100 dark:border-gray-700 flex flex-col">
+
+    <div class="overflow-y-auto flex-1">
+      {% if conversations %}
+      <div class="divide-y divide-gray-100 dark:divide-gray-700">
+        {% for convo in conversations %}
+        {% with last_msg=convo.messages.last %}
+
+        <!-- Conversation Row -->
+        <a href="{% url 'chat_view' convo.id %}"
+          class="block hover:bg-blue-50/50 dark:hover:bg-gray-700/50 transition duration-150 ease-in-out">
+          <div class="px-6 py-5 flex items-center gap-4">
+
+            <!-- AVATAR -->
+            <div class="flex-shrink-0 relative">
+              {% if convo.other_user.avatar %}
+              <img class="h-14 w-14 rounded-full object-cover border-2 border-white dark:border-gray-800 shadow-sm"
+                src="{{ convo.other_user.avatar.url }}" alt="{{ convo.other_user.username }}">
+              {% else %}
+              <div
+                class="h-14 w-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-sm">
+                {{ convo.other_user.username|slice:":1"|upper }}
+              </div>
+              {% endif %}
+
+              <!-- Online Status Dot (Optional/Mock) -->
+              <span
+                class="absolute bottom-0 right-0 block h-3.5 w-3.5 rounded-full ring-2 ring-white dark:ring-gray-900 bg-green-400"></span>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center justify-between mb-1">
+                <p class="text-base font-bold text-gray-900 dark:text-gray-100 truncate">
+                  {{ convo.other_user.username }}
+
+                  <!-- Role Badge -->
+                  <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium 
+                                                {% if convo.other_user.user_type == 'recruiter' %}
+                                                    bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-300
+                                                {% else %}
+                                                    bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300
+                                                {% endif %}">
+                    {{ convo.other_user.user_type|title|default:"User" }}
+                  </span>
+                </p>
+
+                <!-- Time -->
+                <p class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap ml-2">
+                  {{ convo.updated_at|date:"M d" }}
+                </p>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <!-- Message Preview -->
+                <p
+                  class="text-sm text-gray-600 dark:text-gray-300 truncate pr-4 line-clamp-1
+                                            {% if last_msg and last_msg.sender != user and not last_msg.is_read %} font-semibold text-gray-900 dark:text-white {% endif %}">
+                  {% if last_msg.sender == user %}
+                  <span class="text-gray-400 dark:text-gray-500">You:</span>
+                  {% endif %}
+                  {{ convo.last_message|default:"Started a conversation" }}
+                </p>
+
+                <!-- Unread Indicator -->
+                {% if last_msg and last_msg.sender != user and not last_msg.is_read %}
+                <span class="inline-block h-3 w-3 rounded-full bg-blue-600 shadow-sm flex-shrink-0"></span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </a>
+        {% endwith %}
+        {% endfor %}
+      </div>
+      {% else %}
+      <!-- EMPTY STATE -->
+      <div class="h-full flex flex-col items-center justify-center text-center p-8">
+        <div
+          class="w-20 h-20 bg-gray-50 dark:bg-gray-700/50 rounded-full flex items-center justify-center mb-6 shadow-inner">
+          <i class="fa-regular fa-comments text-4xl text-gray-400 dark:text-gray-500"></i>
+        </div>
+
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white">No messages yet</h3>
+        <p class="text-gray-500 dark:text-gray-400 mt-2 max-w-sm">
+          Connect with recruiters and job seekers to start a professional conversation.
+        </p>
+
+        <!-- Calls to Action -->
+        <div class="mt-8 flex flex-col sm:flex-row gap-4">
+          {% if user.user_type == 'job_seeker' %}
+          <a href="{% url 'job_list' %}"
+            class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-blue-500/30 transition transform hover:-translate-y-0.5">
+            Browse Jobs
+          </a>
+          {% else %}
+          <a href="{% url 'recruiter_applications' %}"
+            class="px-6 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-violet-500/30 transition transform hover:-translate-y-0.5">
+            Review Applicants
+          </a>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

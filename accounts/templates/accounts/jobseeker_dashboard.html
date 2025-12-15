@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Job Seeker Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- HEADER -->
+<!-- HEADER -->
+<div class="max-w-6xl mx-auto px-6">
+  <h2 class="text-4xl font-bold text-gray-800 dark:text-white">
+    Welcome, {{ request.user.username }}
+  </h2>
+  <p class="text-gray-600 dark:text-gray-300 mt-2">
+    Track your job applications and opportunities
+  </p>
+
+  <!-- STATS -->
+  <div class="mt-8 grid md:grid-cols-3 gap-6">
+
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow transition">
+      <h3 class="text-gray-500 dark:text-gray-400">Applications</h3>
+      <p class="text-4xl font-bold text-indigo-600 dark:text-indigo-400">
+        {{ applied_jobs_count }}
+      </p>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow transition">
+      <h3 class="text-gray-500 dark:text-gray-400">Saved Jobs</h3>
+      <p class="text-4xl font-bold text-green-600 dark:text-green-400">
+        {{ saved_jobs_count }}
+      </p>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow transition">
+      <h3 class="text-gray-500 dark:text-gray-400">Notifications</h3>
+      <p class="text-4xl font-bold text-yellow-500">
+        {{ notifications_count }}
+      </p>
+    </div>
+
+  </div>
+
+  <!-- RECENT APPLICATIONS -->
+  <div class="mt-12">
+    <h3 class="text-2xl font-bold mb-4 dark:text-white">Recent Applications</h3>
+
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow overflow-hidden transition">
+      <table class="w-full text-left">
+        <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+          <tr>
+            <th class="p-4">Job</th>
+            <th>Status</th>
+            <th>Applied On</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody class="text-gray-700 dark:text-gray-200">
+          {% for app in recent_applications %}
+          <tr class="border-t dark:border-gray-700">
+            <td class="p-4 font-semibold">{{ app.job.title }}</td>
+            <td>
+              <span class="px-3 py-1 rounded-full text-white text-sm
+                                {% if app.status == 'pending' %} bg-yellow-500
+                                {% elif app.status == 'accepted' %} bg-green-600
+                                {% else %} bg-red-600 {% endif %}">
+                {{ app.status|title }}
+              </span>
+            </td>
+            <td>{{ app.applied_on|date:"M d, Y" }}</td>
+            <td>
+              <a href="{% url 'application_detail' app.id %}"
+                class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">
+                View
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="p-6 text-center text-gray-500 dark:text-gray-400">
+              No applications yet.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RECOMMENDED JOBS -->
+  <div class="mt-12">
+    <h3 class="text-2xl font-bold mb-4 dark:text-white">Recommended Jobs</h3>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      {% for job in recommended_jobs %}
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow transition">
+        <h4 class="text-xl font-bold dark:text-white">{{ job.title }}</h4>
+        <p class="text-gray-600 dark:text-gray-300 mt-1">{{ job.location }}</p>
+
+        <a href="{% url 'job_list' %}"
+          class="inline-block mt-4 text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">
+          View Job
+        </a>
+      </div>
+      {% empty %}
+      <p class="text-gray-500 dark:text-gray-400">No recommendations yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

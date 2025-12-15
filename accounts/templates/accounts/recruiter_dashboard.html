@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Recruiter Dashboard – SkillBridge{% endblock %}
+
+{% block content %}
+<style>
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-up {
+        animation: fadeUp .7s ease-out;
+    }
+
+    .glass {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+    }
+</style>
+
+<!-- HEADER -->
+<!-- Note: Removed custom navbar to match base.html style as requested -->
+
+
+<!-- HEADER -->
+<div class="w-full text-center py-24 fade-up">
+    <h1 class="text-5xl font-extrabold text-gray-900 dark:text-white">
+        Recruiter <span
+            class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-600">Dashboard</span>
+    </h1>
+    <p class="text-gray-600 dark:text-gray-300 text-lg mt-2">
+        Manage job postings and review talented applicants.
+    </p>
+</div>
+
+<div class="max-w-7xl mx-auto px-6 fade-up">
+
+    <!-- STATS CARDS -->
+    <div class="grid md:grid-cols-3 gap-8 mb-12">
+
+        <!-- JOBS POSTED -->
+        <div class="glass p-8 rounded-3xl shadow-xl hover:scale-[1.03] transition cursor-pointer">
+            <h3 class="text-gray-800 dark:text-gray-200 text-xl font-semibold">Jobs Posted</h3>
+            <p class="text-5xl font-extrabold text-blue-700 mt-3">{{ job_count }}</p>
+        </div>
+
+        <!-- APPLICATIONS RECEIVED -->
+        <div class="glass p-8 rounded-3xl shadow-xl hover:scale-[1.03] transition cursor-pointer">
+            <h3 class="text-gray-800 dark:text-gray-200 text-xl font-semibold">Total Applications</h3>
+            <p class="text-5xl font-extrabold text-violet-700 mt-3">{{ total_applications }}</p>
+        </div>
+
+        <!-- NEW APPLICATIONS -->
+        <div class="glass p-8 rounded-3xl shadow-xl hover:scale-[1.03] transition cursor-pointer">
+            <h3 class="text-gray-800 dark:text-gray-200 text-xl font-semibold">New Today</h3>
+            <p class="text-5xl font-extrabold text-indigo-700 mt-3">{{ new_today }}</p>
+        </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="glass p-10 rounded-3xl shadow-xl mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Quick Actions</h2>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            <a href="{% url 'post_job' %}"
+                class="p-6 bg-gradient-to-r from-blue-500 to-violet-600 rounded-2xl text-white text-center font-semibold shadow-lg hover:scale-105 transition">
+                ➕ Post New Job
+            </a>
+
+            <a href="{% url 'job_list' %}"
+                class="p-6 bg-gradient-to-r from-indigo-500 to-blue-600 rounded-2xl text-white text-center font-semibold shadow-lg hover:scale-105 transition">
+                📄 View All Jobs
+            </a>
+
+            <a href="{% url 'recruiter_applications' %}"
+                class="p-6 bg-gradient-to-r from-violet-500 to-pink-500 rounded-2xl text-white text-center font-semibold shadow-lg hover:scale-105 transition">
+                📝 Review Applications
+            </a>
+
+            <a href="{% url 'provider_dashboard' %}"
+                class="p-6 bg-gradient-to-r from-teal-500 to-emerald-600 rounded-2xl text-white text-center font-semibold shadow-lg hover:scale-105 transition">
+                📚 Manage Courses
+            </a>
+        </div>
+    </div>
+
+    <!-- RECENT APPLICATIONS -->
+    <div class="glass p-10 rounded-3xl shadow-xl">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Recent Applications</h2>
+
+        {% if recent_apps %}
+        <table class="w-full text-left">
+            <thead>
+                <tr>
+                    <th class="py-3 text-gray-700 dark:text-gray-300 font-semibold">Applicant</th>
+                    <th class="py-3 text-gray-700 dark:text-gray-300 font-semibold">Job</th>
+                    <th class="py-3 text-gray-700 dark:text-gray-300 font-semibold">Date</th>
+                    <th class="py-3 text-gray-700 dark:text-gray-300 font-semibold text-right">Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for app in recent_apps %}
+                <tr class="border-b border-gray-300/30 text-gray-900 dark:text-gray-100">
+                    <td class="py-3">{{ app.applicant.username }}</td>
+                    <td class="py-3">{{ app.job.title }}</td>
+                    <td class="py-3">{{ app.applied_on|date:"M d, Y" }}</td>
+                    <td class="py-3 text-right">
+                        <a href="{% url 'recruiter_applications' %}"
+                            class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+                            View
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% else %}
+        <p class="text-gray-600 dark:text-gray-400 text-lg">No recent applications yet.</p>
+        {% endif %}
+    </div>
+
+    <br><br>
+</div>
+
+{% endblock %}

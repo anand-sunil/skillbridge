@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto mt-20 px-6">
+    <div class="glass rounded-3xl p-8 shadow-xl">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Edit Profile</h2>
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
+                    {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" class="w-full h-full object-cover">
+                    {% else %}
+                    <span class="text-2xl font-bold text-gray-500 dark:text-gray-400">{{ user.username|slice:":1"|upper
+                        }}</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Profile Picture</label>
+                    <input type="file" name="avatar" accept="image/*"
+                        class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Username</label>
+                <input type="text" name="username" value="{{ user.username }}" required
+                    class="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none
+                           bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                <input type="email" name="email" value="{{ user.email }}" required
+                    class="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none
+                           bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white">
+            </div>
+
+            {% if user.user_type == 'job_seeker' %}
+            <!-- Job Seeker Fields -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Bio / About Me</label>
+                <textarea name="bio" rows="3"
+                    class="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none
+                           bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white">{{ user.jobseekerprofile.bio|default:'' }}</textarea>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Skills (comma
+                    separated)</label>
+                <input type="text" name="skills" value="{{ user.jobseekerprofile.skills|default:'' }}"
+                    class="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none
+                           bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Upload Resume</label>
+                <input type="file" name="resume" accept=".pdf,.doc,.docx"
+                    class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                {% if user.jobseekerprofile.resume %}
+                <p class="text-xs text-green-600 dark:text-green-400 mt-1">✓ Current: <a
+                        href="{{ user.jobseekerprofile.resume.url }}" target="_blank" class="underline">View Resume</a>
+                </p>
+                {% endif %}
+            </div>
+
+            {% elif user.user_type == 'recruiter' %}
+            <!-- Recruiter Fields -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Company Name</label>
+                <input type="text" name="company_name" value="{{ user.recruiterprofile.company_name|default:'' }}"
+                    class="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none
+                           bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Company Website</label>
+                <input type="url" name="company_website" value="{{ user.recruiterprofile.company_website|default:'' }}"
+                    class="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none
+                           bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">About Company</label>
+                <textarea name="company_description" rows="3"
+                    class="mt-1 w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none
+                           bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white">{{ user.recruiterprofile.company_description|default:'' }}</textarea>
+            </div>
+            {% endif %}
+
+            <div class="flex gap-4 pt-4">
+                <button type="submit"
+                    class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition">
+                    Save Changes
+                </button>
+
+                <a href="{% url 'profile' %}"
+                    class="flex-1 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-center rounded-xl font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .glass {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .dark .glass {
+        background: rgba(17, 24, 39, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+</style>
+{% endblock %}

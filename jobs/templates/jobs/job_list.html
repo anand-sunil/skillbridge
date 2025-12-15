@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}Job Listings{% endblock %}
+
+{% block content %}
+
+<style>
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-up {
+        animation: fadeUp .6s ease-out both;
+    }
+
+    .glass {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+    }
+
+    .dark .glass {
+        background: rgba(17, 24, 39, 0.55);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+</style>
+
+<!-- PAGE HEADER -->
+<section class="pt-16 text-center fade-up">
+    <h1 class="text-5xl font-bold text-gray-900 dark:text-white">
+        Find Your
+        <span class="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
+            Dream Job
+        </span>
+    </h1>
+    <p class="text-lg text-gray-600 dark:text-gray-300 mt-4">
+        Search and filter opportunities tailored just for you
+    </p>
+</section>
+
+<!-- FILTER BAR -->
+<section class="max-w-6xl mx-auto mt-12 px-4 fade-up">
+    <div class="glass rounded-3xl shadow-xl p-8">
+        <form method="get" class="grid md:grid-cols-4 gap-5">
+
+            <!-- SEARCH -->
+            <input
+                type="text"
+                name="search"
+                value="{{ request.GET.search }}"
+                placeholder="Search job title..."
+                class="py-3 px-4 rounded-xl bg-white/60 dark:bg-gray-800/60 border border-white/60 dark:border-gray-600
+                       text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400
+                       focus:ring-2 focus:ring-blue-500 outline-none">
+
+            <!-- LOCATION -->
+            <select name="location"
+                class="py-3 px-4 rounded-xl bg-white/60 dark:bg-gray-800/60 border border-white/60 dark:border-gray-600
+                       text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="">All Locations</option>
+                <option value="Remote" {% if request.GET.location == "Remote" %}selected{% endif %}>Remote</option>
+                <option value="Kerala" {% if request.GET.location == "Kerala" %}selected{% endif %}>Kerala</option>
+                <option value="Bangalore" {% if request.GET.location == "Bangalore" %}selected{% endif %}>Bangalore</option>
+            </select>
+
+            <!-- SALARY -->
+            <select name="salary"
+                class="py-3 px-4 rounded-xl bg-white/60 dark:bg-gray-800/60 border border-white/60 dark:border-gray-600
+                       text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="">Salary Range</option>
+                <option value="10-20" {% if request.GET.salary == "10-20" %}selected{% endif %}>₹10k – ₹20k</option>
+                <option value="20-40" {% if request.GET.salary == "20-40" %}selected{% endif %}>₹20k – ₹40k</option>
+                <option value="40+" {% if request.GET.salary == "40+" %}selected{% endif %}>₹40k+</option>
+            </select>
+
+            <!-- JOB TYPE -->
+            <select name="job_type"
+                class="py-3 px-4 rounded-xl bg-white/60 dark:bg-gray-800/60 border border-white/60 dark:border-gray-600
+                       text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="">Job Type</option>
+                <option value="full_time" {% if request.GET.job_type == "full_time" %}selected{% endif %}>Full Time</option>
+                <option value="part_time" {% if request.GET.job_type == "part_time" %}selected{% endif %}>Part Time</option>
+                <option value="internship" {% if request.GET.job_type == "internship" %}selected{% endif %}>Internship</option>
+            </select>
+
+            <!-- SUBMIT -->
+            <div class="md:col-span-4 flex justify-center">
+                <button type="submit"
+                    class="mt-4 px-12 py-3 rounded-2xl font-semibold text-white
+                           bg-gradient-to-r from-blue-600 to-violet-600
+                           hover:scale-105 hover:shadow-xl transition">
+                    Apply Filters
+                </button>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+<!-- JOB LIST -->
+<section class="max-w-6xl mx-auto mt-14 px-4 grid md:grid-cols-2 gap-8">
+    {% for job in jobs %}
+    <article class="glass rounded-2xl p-8 shadow-xl hover:-translate-y-2 hover:shadow-2xl transition fade-up">
+
+        <!-- HEADER -->
+        <div class="flex justify-between items-start">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                {{ job.title }}
+            </h2>
+
+            {% if user.is_authenticated and user.user_type == "job_seeker" %}
+                <a href="{% url 'save_job' job.id %}"
+                   class="text-xl transition
+                          {% if job.id in saved_job_ids %}
+                              text-red-500 hover:text-red-600
+                          {% else %}
+                              text-gray-400 hover:text-red-500
+                          {% endif %}">
+                    {% if job.id in saved_job_ids %}❤️{% else %}🤍{% endif %}
+                </a>
+            {% endif %}
+        </div>
+
+        <!-- DESCRIPTION -->
+        <p class="text-gray-700 dark:text-gray-300 mt-4 line-clamp-3">
+            {{ job.description }}
+        </p>
+
+        <!-- META -->
+        <div class="mt-5 text-sm text-gray-600 dark:text-gray-400 space-y-1">
+            <p><strong>📍 Location:</strong> {{ job.location }}</p>
+            {% if job.salary %}
+            <p><strong>💰 Salary:</strong> ₹{{ job.salary }}</p>
+            {% endif %}
+            <p><strong>📅 Posted:</strong> {{ job.posted_on|date:"M d, Y" }}</p>
+        </div>
+
+        <!-- CTA -->
+        {% if user.is_authenticated and user.user_type == "job_seeker" %}
+        <a href="{% url 'apply_job' job.id %}"
+           class="mt-6 block w-full text-center py-3 rounded-xl font-semibold text-white
+                  bg-gradient-to-r from-blue-600 to-violet-600
+                  hover:scale-105 hover:shadow-xl transition">
+            Apply Now
+        </a>
+        {% endif %}
+
+    </article>
+    {% empty %}
+    <div class="col-span-2 text-center py-20 text-gray-600 dark:text-gray-400 text-xl fade-up">
+        No jobs match your filters.
+    </div>
+    {% endfor %}
+</section>
+
+{% endblock %}

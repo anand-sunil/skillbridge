@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}Provider Dashboard | SkillBridge{% endblock %}
+
+{% block content %}
+
+<style>
+    .glass {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+</style>
+
+<div class="max-w-7xl mx-auto px-6 py-10">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-center mb-10">
+        <div>
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-white">
+                Provider Dashboard
+            </h1>
+            <p class="text-gray-600 dark:text-gray-300 mt-1">
+                Manage your courses and listings
+            </p>
+        </div>
+
+        <a href="{% url 'add_course' %}"
+            class="px-6 py-3 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-xl font-semibold hover:scale-105 transition">
+            + Add New Course
+        </a>
+    </div>
+
+    <!-- STATS -->
+    <div class="grid md:grid-cols-4 gap-6 mb-12">
+
+        <div class="glass p-6 rounded-2xl shadow">
+            <h3 class="text-gray-600 dark:text-gray-400 text-sm">Total Courses</h3>
+            <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">
+                {{ total_courses }}
+            </p>
+        </div>
+
+        <div class="glass p-6 rounded-2xl shadow">
+            <h3 class="text-gray-600 dark:text-gray-400 text-sm">Active Listings</h3>
+            <p class="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">
+                {{ active_courses }}
+            </p>
+        </div>
+
+        <div class="glass p-6 rounded-2xl shadow">
+            <h3 class="text-gray-600 dark:text-gray-400 text-sm">Expired</h3>
+            <p class="text-3xl font-bold text-red-500 dark:text-red-400 mt-2">
+                {{ expired_courses }}
+            </p>
+        </div>
+
+        <div class="glass p-6 rounded-2xl shadow">
+            <h3 class="text-gray-600 dark:text-gray-400 text-sm">Total Revenue</h3>
+            <p class="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mt-2">
+                ₹{{ total_revenue }}
+            </p>
+        </div>
+
+    </div>
+
+    <!-- COURSE LIST -->
+    <div class="glass rounded-3xl shadow p-8">
+
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            My Courses
+        </h2>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+
+                <thead>
+                    <tr class="text-gray-600 dark:text-gray-300 border-b dark:border-gray-700">
+                        <th class="py-3">Course</th>
+                        <th>Status</th>
+                        <th>Plan</th>
+                        <th>Expires</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for course in courses %}
+                    <tr
+                        class="border-b dark:border-gray-700 hover:bg-white/40 dark:hover:bg-gray-800/40 transition text-gray-900 dark:text-gray-100">
+
+                        <td class="py-4 font-semibold text-gray-900 dark:text-white">
+                            {{ course.title }}
+                        </td>
+
+                        <td>
+                            {% if course.is_active %}
+                            <span
+                                class="px-3 py-1 bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 rounded-full text-sm">
+                                Active
+                            </span>
+                            {% else %}
+                            <span class="px-3 py-1 bg-red-100 text-red-600 rounded-full text-sm">
+                                Expired
+                            </span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{ course.plan_days }} days
+                        </td>
+
+                        <td>
+                            {{ course.expires_on|date:"M d, Y" }}
+                        </td>
+
+                        <td class="flex gap-3 py-4">
+
+                            <!-- Edit Disabled in MVP
+                            <a href="#" class="text-gray-400 cursor-not-allowed" title="Editing disabled">Edit</a>
+                            -->
+
+                            {% if not course.is_active %}
+                            <a href="{% url 'course_payment' course.id %}" class="text-violet-600 hover:underline">
+                                Renew
+                            </a>
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="py-6 text-center text-gray-500 dark:text-gray-400">
+                            No courses added yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

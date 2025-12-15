@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Application Details | SkillBridge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-violet-50 p-10">
+
+    <div class="max-w-3xl mx-auto bg-white/70 backdrop-blur-lg rounded-3xl shadow-xl p-8">
+
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">
+            Application Details
+        </h1>
+
+        <!-- Job Info -->
+        <div class="space-y-4 text-gray-700">
+            <p>
+                <strong>Job Title:</strong>
+                {{ application.job.title }}
+            </p>
+
+            <p>
+                <strong>Company / Recruiter:</strong>
+                {{ application.job.recruiter.username }}
+                {% if user.user_type == 'job_seeker' %}
+                <a href="{% url 'start_chat' application.job.recruiter.id %}"
+                    class="ml-2 text-blue-600 hover:underline text-sm">
+                    <i class="fa-regular fa-comment"></i> Message
+                </a>
+                {% endif %}
+            </p>
+
+            <p>
+                <strong>Applicant:</strong>
+                {{ application.applicant.username }}
+                {% if user.user_type == 'recruiter' %}
+                <a href="{% url 'start_chat' application.applicant.id %}"
+                    class="ml-2 text-blue-600 hover:underline text-sm">
+                    <i class="fa-regular fa-comment"></i> Message Applicant
+                </a>
+                {% endif %}
+
+            <p>
+                <strong>Status:</strong>
+                <span class="
+                    px-3 py-1 rounded-full text-white text-sm
+                    {% if application.status == 'accepted' %} bg-green-500
+                    {% elif application.status == 'rejected' %} bg-red-500
+                    {% else %} bg-yellow-500 {% endif %}
+                ">
+                    {{ application.status|title }}
+                </span>
+            </p>
+
+            <p>
+                <strong>Applied On:</strong>
+                {{ application.applied_on|date:"M d, Y" }}
+            </p>
+
+            {% if application.resume %}
+            <p>
+                <strong>Resume:</strong>
+                <a href="{{ application.resume.url }}" class="text-blue-600 underline" target="_blank">
+                    View Resume
+                </a>
+            </p>
+            {% endif %}
+        </div>
+
+        <!-- Back Button -->
+        <div class="mt-8">
+            <a href="{% url 'jobseeker_dashboard' %}" class="inline-block px-6 py-3 bg-gradient-to-r from-blue-600 to-violet-600
+                      text-white rounded-xl hover:scale-105 transition">
+                ← Back to Dashboard
+            </a>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Saved Jobs - SkillBridge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 p-6">
+
+    <!-- Page Header -->
+    <div class="max-w-6xl mx-auto text-white mb-10 fade-in">
+        <h1 class="text-4xl font-bold">Saved Jobs</h1>
+        <p class="text-blue-100 mt-2">Jobs you've saved for later</p>
+    </div>
+
+    <div class="max-w-6xl mx-auto space-y-6">
+
+        {% if saved_jobs %}
+            {% for item in saved_jobs %}
+            <div class="glass rounded-2xl p-6 shadow-xl fade-in">
+                <div class="flex justify-between items-start">
+
+                    <!-- Job Info -->
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">{{ item.job.title }}</h2>
+                        <p class="text-blue-100 mt-2">{{ item.job.description|truncatechars:150 }}</p>
+
+                        <div class="flex items-center gap-6 mt-4 text-sm text-blue-200">
+                            <span>📍 {{ item.job.location }}</span>
+                            <span>💼 Posted: {{ item.job.posted_on|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex flex-col items-end gap-3">
+                        <!-- Unsave -->
+                        <a href="{% url 'save_job' item.job.id %}"
+                           class="px-4 py-2 bg-red-500/80 text-white rounded-lg hover:bg-red-600 transition">
+                            Remove
+                        </a>
+
+                        <!-- Apply -->
+                        <a href="{% url 'apply_job' item.job.id %}"
+                           class="px-4 py-2 bg-gradient-to-r from-blue-500 to-violet-600 text-white font-semibold rounded-lg hover:opacity-90 transition">
+                            Apply Now
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+
+        {% else %}
+            <div class="glass rounded-2xl p-10 text-center text-white shadow-xl fade-in">
+                <h2 class="text-3xl font-bold mb-3">No Saved Jobs</h2>
+                <p class="text-blue-100">Save jobs while browsing to see them here later.</p>
+
+                <a href="/jobs/"
+                   class="inline-block mt-6 px-6 py-3 bg-white text-blue-600 rounded-xl font-semibold shadow-md hover:scale-105 transition">
+                    Browse Jobs
+                </a>
+            </div>
+        {% endif %}
+
+    </div>
+</body>
+</html>

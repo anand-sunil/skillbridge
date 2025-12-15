@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Payment Successful | SkillBridge{% endblock %}
+
+{% block content %}
+
+<style>
+    .glass {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+</style>
+
+<div class="min-h-[70vh] flex items-center justify-center px-4">
+
+    <div class="glass rounded-3xl p-10 max-w-xl w-full text-center shadow-2xl">
+
+        <!-- SUCCESS ICON -->
+        <div class="flex justify-center mb-6">
+            <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
+                <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- TITLE -->
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+            Payment Successful 🎉
+        </h1>
+
+        <p class="text-gray-600 dark:text-gray-300 mt-3">
+            Your course is now live on SkillBridge
+        </p>
+
+        <!-- DETAILS -->
+        <div class="mt-8 text-left space-y-4 text-gray-700 dark:text-gray-300">
+
+            <div class="flex justify-between">
+                <span class="font-semibold">Course</span>
+                <span class="text-gray-900 dark:text-white">{{ course.title }}</span>
+            </div>
+
+            <div class="flex justify-between">
+                <span class="font-semibold">Plan Duration</span>
+                <span>{{ course.plan_days }} Days</span>
+            </div>
+
+            <div class="flex justify-between">
+                <span class="font-semibold">Amount Paid</span>
+                <span>₹{{ course.amount_paid }}</span>
+            </div>
+
+            <div class="flex justify-between">
+                <span class="font-semibold">Expires On</span>
+                <span>{{ course.expires_on|date:"M d, Y" }}</span>
+            </div>
+
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="mt-10 flex flex-col gap-4">
+
+            <a href="{% url 'provider_dashboard' %}"
+                class="py-3 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 text-white font-semibold hover:shadow-xl hover:scale-105 transition">
+                Go to Dashboard
+            </a>
+
+            <a href="{% url 'course_list' %}" class="text-blue-600 hover:underline font-semibold">
+                View Public Courses
+            </a>
+
+        </div>
+
+        <!-- FOOTER -->
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-8">
+            Need help? Contact support@skillbridge.com
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

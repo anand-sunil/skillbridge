@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ job.title }} – SkillBridge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-up {
+            animation: fadeUp .7s ease-out;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .float {
+            animation: floatAnim 6s ease-in-out infinite;
+        }
+
+        @keyframes floatAnim {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-12px);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-violet-50 min-h-screen relative overflow-x-hidden">
+
+    <!-- Animated background circles -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden">
+        <div class="absolute top-32 left-10 w-64 h-64 bg-blue-400 rounded-full blur-3xl opacity-20 float"></div>
+        <div class="absolute bottom-20 right-20 w-72 h-72 bg-violet-500 rounded-full blur-3xl opacity-20 float"
+            style="animation-delay: 2s;"></div>
+    </div>
+
+    <!-- Page Container -->
+    <div class="max-w-5xl mx-auto pt-28 px-6 fade-up">
+
+        <!-- Back button -->
+        <a href="{% url 'job_list' %}" class="text-blue-600 font-semibold hover:underline mb-6 inline-block">
+            ← Back to Job Listings
+        </a>
+
+        <!-- Main Job Card -->
+        <div class="glass rounded-3xl p-10 shadow-xl fade-up">
+
+            <!-- HEADER -->
+            <div class="flex justify-between items-start">
+                <div>
+                    <h1 class="text-4xl font-bold text-gray-900">{{ job.title }}</h1>
+                    <p class="text-lg text-gray-700 mt-2">Posted by
+                        <span class="font-semibold">{{ job.recruiter.username }}</span>
+                        {% if user.user_type == 'job_seeker' %}
+                        <a href="{% url 'start_chat' job.recruiter.id %}"
+                            class="ml-3 text-sm text-blue-600 hover:text-blue-800 font-medium underline">
+                            <i class="fa-regular fa-comment-dots"></i> Message Recruiter
+                        </a>
+                        {% endif %}
+                    </p>
+                </div>
+
+                {% if user.user_type == 'job_seeker' %}
+                <div>
+                    {% if is_saved %}
+                    <a href="{% url 'save_job' job.id %}"
+                        class="text-red-500 text-3xl hover:scale-110 transition">❤️</a>
+                    {% else %}
+                    <a href="{% url 'save_job' job.id %}"
+                        class="text-gray-500 text-3xl hover:text-red-500 hover:scale-110 transition">🤍</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Job Meta -->
+            <div class="mt-6 grid md:grid-cols-3 gap-4 text-gray-700">
+
+                <div class="glass rounded-xl p-4 shadow-md">
+                    <p class="font-semibold text-gray-900">📍 Location</p>
+                    <p class="mt-1">{{ job.location }}</p>
+                </div>
+
+                <div class="glass rounded-xl p-4 shadow-md">
+                    <p class="font-semibold text-gray-900">💰 Salary</p>
+                    <p class="mt-1">₹{{ job.salary }}</p>
+                </div>
+
+                <div class="glass rounded-xl p-4 shadow-md">
+                    <p class="font-semibold text-gray-900">📅 Posted On</p>
+                    <p class="mt-1">{{ job.posted_on|date:"M d, Y" }}</p>
+                </div>
+            </div>
+
+            <!-- Description Section -->
+            <div class="mt-10">
+                <h2 class="text-2xl font-bold text-gray-900 mb-3">Job Description</h2>
+                <p class="text-gray-700 leading-relaxed">{{ job.description|linebreaks }}</p>
+            </div>
+
+            <!-- Apply Button -->
+            {% if user.user_type == 'job_seeker' %}
+            <div class="mt-10">
+                <a href="{% url 'apply_job' job.id %}"
+                    class="inline-block w-full md:w-auto px-12 py-4 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-xl text-lg font-semibold hover:shadow-2xl hover:scale-105 transition">
+                    Apply Now
+                </a>
+            </div>
+            {% endif %}
+
+        </div>
+
+        <!-- Related jobs -->
+        <div class="mt-16 fade-up">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Related Jobs</h2>
+
+            <div class="grid md:grid-cols-2 gap-6">
+
+                {% for r in job.recruiter.posted_jobs.all|slice:":4" %}
+                {% if r.id != job.id %}
+                <div class="glass rounded-2xl p-6 shadow-lg hover:-translate-y-2 hover:shadow-2xl transition">
+
+                    <h3 class="text-xl font-semibold text-gray-900">{{ r.title }}</h3>
+                    <p class="text-gray-600 mt-2 line-clamp-2">{{ r.description }}</p>
+
+                    <a href="{% url 'job_detail' r.id %}"
+                        class="inline-block mt-4 text-blue-600 font-semibold hover:underline">
+                        View Details →
+                    </a>
+                </div>
+                {% endif %}
+                {% endfor %}
+
+            </div>
+        </div>
+
+    </div>
+
+    <br><br>
+
+</body>
+
+</html>

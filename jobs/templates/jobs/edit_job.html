@@ -1,0 +1,127 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Job - SkillBridge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-blue-500 via-indigo-600 to-violet-700">
+
+    <!-- NAVBAR -->
+    <nav class="fixed top-0 left-0 w-full glass shadow-lg z-50 px-10 py-4 flex justify-between items-center fade-in">
+        <!-- Logo -->
+        <a href="{% url 'job_list' %}" class="text-2xl font-bold text-white">
+            SkillBridge
+        </a>
+
+        <!-- Links -->
+        <div class="flex items-center gap-6 font-semibold text-white/90">
+            <a href="{% url 'post_job' %}" class="hover:text-white transition">Post Job</a>
+            <a href="{% url 'my_jobs' %}" class="hover:text-white transition">My Jobs</a>
+
+            <form method="POST" action="{% url 'logout' %}" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="text-red-200 hover:text-red-100 transition">Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="max-w-3xl mx-auto px-6 py-16 fade-in">
+
+        <!-- Header -->
+        <div class="mb-8 text-center">
+            <h1 class="text-4xl font-bold text-white">Edit Job</h1>
+            <p class="text-blue-100 mt-2">Update your job listing details</p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="glass rounded-2xl shadow-2xl p-8">
+
+            <form method="POST" class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Job Title -->
+                <div>
+                    <label class="block text-white font-medium mb-2">Job Title</label>
+                    <input type="text" name="title" required value="{{ job.title }}"
+                        class="w-full px-4 py-3 rounded-xl bg-white/20 text-white placeholder-blue-200 focus:ring-2 focus:ring-blue-300 focus:outline-none">
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="block text-white font-medium mb-2">Job Description</label>
+                    <textarea name="description" rows="5" required
+                        class="w-full px-4 py-3 rounded-xl bg-white/20 text-white placeholder-blue-200 focus:ring-2 focus:ring-blue-300 focus:outline-none">{{ job.description }}</textarea>
+                </div>
+
+                <!-- Location -->
+                <div>
+                    <label class="block text-white font-medium mb-2">Location</label>
+                    <input type="text" name="location" required value="{{ job.location }}"
+                        class="w-full px-4 py-3 rounded-xl bg-white/20 text-white focus:ring-2 focus:ring-blue-300 focus:outline-none">
+                </div>
+
+                <!-- Salary -->
+                <div>
+                    <label class="block text-white font-medium mb-2">Salary (optional)</label>
+                    <input type="number" step="0.01" name="salary" value="{{ job.salary }}"
+                        placeholder="Leave blank if not applicable"
+                        class="w-full px-4 py-3 rounded-xl bg-white/20 text-white focus:ring-2 focus:ring-blue-300 focus:outline-none">
+                </div>
+
+                <!-- Deadline -->
+                <div>
+                    <label class="block text-white font-medium mb-2">Application Deadline</label>
+                    <input type="date" name="deadline" value="{{ job.deadline|date:'Y-m-d' }}"
+                        class="w-full px-4 py-3 rounded-xl bg-white/20 text-white focus:ring-2 focus:ring-blue-300 focus:outline-none">
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-4 pt-6">
+                    <button type="submit"
+                        class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-xl font-semibold hover:scale-105 transition">
+                        Save Changes
+                    </button>
+
+                    <a href="{% url 'my_jobs' %}"
+                        class="flex-1 py-3 text-center bg-gray-700/70 text-white rounded-xl hover:bg-gray-800 transition">
+                        Cancel
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>

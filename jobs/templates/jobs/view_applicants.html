@@ -1,0 +1,105 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Applicants - {{ job.title }} | SkillBridge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-violet-50 min-h-screen">
+
+<!-- NAVBAR -->
+<nav class="fixed top-0 left-0 w-full glass shadow-lg z-50 px-10 py-4 flex justify-between items-center">
+    <a href="{% url 'recruiter_dashboard' %}"
+       class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-600">
+        SkillBridge
+    </a>
+
+    <a href="{% url 'recruiter_dashboard' %}"
+       class="text-blue-600 font-semibold hover:underline">
+        ← Back to Dashboard
+    </a>
+</nav>
+
+<!-- CONTENT -->
+<div class="max-w-6xl mx-auto pt-28 px-6">
+
+    <!-- HEADER -->
+    <div class="mb-10">
+        <h1 class="text-4xl font-bold text-gray-900">
+            Applicants for
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600">
+                {{ job.title }}
+            </span>
+        </h1>
+        <p class="text-gray-600 mt-2">Manage applicants and update their status</p>
+    </div>
+
+    <!-- APPLICANTS LIST -->
+    <div class="space-y-6">
+
+        {% for application in applications %}
+        <div class="bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg flex flex-col md:flex-row justify-between gap-6">
+
+            <!-- Applicant Info -->
+            <div>
+                <h2 class="text-xl font-semibold text-gray-800">
+                    {{ application.applicant.username }}
+                </h2>
+                <p class="text-gray-600">{{ application.applicant.email }}</p>
+                <p class="text-sm text-gray-500 mt-1">
+                    Applied on {{ application.applied_on|date:"M d, Y" }}
+                </p>
+
+                {% if application.resume %}
+                <a href="{{ application.resume.url }}"
+                   class="inline-block mt-3 text-blue-600 font-semibold hover:underline">
+                    📄 Download Resume
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Status & Actions -->
+            <div class="flex flex-col items-end justify-between">
+
+                <!-- Status Badge -->
+                <span class="px-4 py-1 rounded-full text-sm font-semibold
+                    {% if application.status == 'accepted' %}
+                        bg-green-100 text-green-700
+                    {% elif application.status == 'rejected' %}
+                        bg-red-100 text-red-700
+                    {% else %}
+                        bg-yellow-100 text-yellow-700
+                    {% endif %}
+                ">
+                    {{ application.status|capfirst }}
+                </span>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-3 mt-4">
+                    <form method="POST" action="#">
+                        {% csrf_token %}
+                        <button class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                            Accept
+                        </button>
+                    </form>
+
+                    <form method="POST" action="#">
+                        {% csrf_token %}
+                        <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                            Reject
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-gray-600 text-lg">No applicants yet.</p>
+        {% endfor %}
+    </div>
+</div>
+
+</body>
+</html>

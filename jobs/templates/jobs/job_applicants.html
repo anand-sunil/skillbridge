@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Applicants{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-6">
+
+    <h1 class="text-3xl font-bold mb-6">
+        Applicants for {{ job.title }}
+    </h1>
+
+    <div class="bg-white shadow rounded-xl overflow-hidden">
+        <table class="w-full text-left">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-6 py-3">Applicant</th>
+                    <th class="px-6 py-3">Applied On</th>
+                    <th class="px-6 py-3 text-center">Resume</th>
+                    <th class="px-6 py-3">Status</th>
+                    <th class="px-6 py-3 text-center">Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for application in applications %}
+                <tr class="border-t hover:bg-gray-50 transition">
+                    <td class="px-6 py-4">
+                        <a href="{% url 'seeker_profile' application.applicant.id %}"
+                            class="flex items-center gap-3 group">
+                            <div
+                                class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600 overflow-hidden group-hover:ring-2 ring-blue-500 transition">
+                                {% if application.applicant.avatar %}
+                                <img src="{{ application.applicant.avatar.url }}" class="w-full h-full object-cover">
+                                {% else %}
+                                {{ application.applicant.username|slice:":1"|upper }}
+                                {% endif %}
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-900 group-hover:text-blue-600 transition">
+                                    {{ application.applicant.username }}
+                                </p>
+                                <p class="text-xs text-gray-500">View Profile</p>
+                            </div>
+                        </a>
+                    </td>
+
+                    <td class="px-6 py-4">
+                        {{ application.applied_on|date:"M d, Y" }}
+                    </td>
+
+                    <td class="px-6 py-4 text-center">
+                        {% if application.resume %}
+                        <a href="{{ application.resume.url }}" target="_blank"
+                            class="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition text-sm font-medium"
+                            title="View Application Resume">
+                            📄 Resume
+                        </a>
+                        {% else %}
+                        <span class="text-gray-400 text-sm">None</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="px-6 py-4">
+                        {% if application.status == "pending" %}
+                        <span
+                            class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-sm font-medium">Pending</span>
+                        {% elif application.status == "accepted" %}
+                        <span
+                            class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-medium">Accepted</span>
+                        {% else %}
+                        <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-sm font-medium">Rejected</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="px-6 py-4 text-center">
+                        {% if application.status == "pending" %}
+                        <div class="flex justify-center gap-2">
+                            <a href="{% url 'accept_application' application.id %}"
+                                class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition"
+                                title="Accept">
+                                ✅
+                            </a>
+                            <a href="{% url 'reject_application' application.id %}"
+                                class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition"
+                                title="Reject">
+                                ❌
+                            </a>
+                        </div>
+                        {% else %}
+                        <span class="text-gray-400 italic">Processed</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="px-6 py-6 text-center text-gray-500">
+                        No applications found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

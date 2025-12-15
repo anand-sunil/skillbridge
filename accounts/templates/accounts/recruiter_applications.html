@@ -1,0 +1,162 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Applications – SkillBridge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-violet-50 min-h-screen">
+
+    <!-- NAVBAR -->
+    <nav class="fixed top-0 left-0 w-full glass shadow-lg z-50 px-10 py-4 flex justify-between items-center">
+        <a href="{% url 'recruiter_dashboard' %}"
+            class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-600">
+            SkillBridge
+        </a>
+
+        <div class="flex items-center gap-6 font-semibold text-gray-700">
+            <a href="{% url 'recruiter_dashboard' %}" class="hover:text-blue-600">Overview</a>
+            <a href="{% url 'post_job' %}" class="hover:text-blue-600">Post Job</a>
+            <a href="{% url 'recruiter_jobs' %}" class="hover:text-blue-600">My Jobs</a>
+            <a href="{% url 'job_list' %}" class="hover:text-blue-600">Public Jobs</a>
+
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button class="text-red-500 hover:text-red-700">Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- PAGE CONTENT -->
+    <div class="max-w-6xl mx-auto pt-28 px-6">
+
+        <!-- HEADER -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-900">
+                Applications Received
+            </h1>
+            <p class="text-gray-600 mt-2">
+                Review and manage candidates who applied to your jobs
+            </p>
+        </div>
+
+        <!-- APPLICATIONS TABLE -->
+        <div class="glass rounded-3xl shadow-xl overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-white/40">
+                    <tr class="text-gray-700 text-sm uppercase">
+                        <th class="px-6 py-4">Applicant</th>
+                        <th class="px-6 py-4">Job</th>
+                        <th class="px-6 py-4 text-center">Resume</th>
+                        <th class="px-6 py-4">Applied On</th>
+                        <th class="px-6 py-4">Status</th>
+                        <th class="px-6 py-4 text-right">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for application in applications %}
+                    <tr class="border-t hover:bg-white/30 transition">
+                        <td class="px-6 py-4">
+                            <a href="{% url 'seeker_profile' application.applicant.id %}"
+                                class="flex items-center gap-3 group">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-600 overflow-hidden">
+                                    {% if application.applicant.avatar %}
+                                    <img src="{{ application.applicant.avatar.url }}"
+                                        class="w-full h-full object-cover">
+                                    {% else %}
+                                    {{ application.applicant.username|slice:":1"|upper }}
+                                    {% endif %}
+                                </div>
+                                <span class="group-hover:text-blue-600 font-semibold text-gray-900 transition">
+                                    {{ application.applicant.username }}
+                                </span>
+                            </a>
+                            <a href="{% url 'start_chat' application.applicant.id %}" title="Message Applicant"
+                                class="inline-flex items-center justify-center w-6 h-6 ml-2 text-blue-500 hover:bg-blue-100 rounded-full transition">
+                                <i class="fa-regular fa-paper-plane text-xs"></i>
+                            </a>
+                        </td>
+
+                        <td class="px-6 py-4 text-gray-700">
+                            {{ application.job.title }}
+                        </td>
+
+                        <td class="px-6 py-4 text-center">
+                            {% if application.resume %}
+                            <a href="{{ application.resume.url }}" target="_blank"
+                                class="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition text-sm font-medium">
+                                📄 Resume
+                            </a>
+                            {% else %}
+                            <span class="text-gray-400 text-sm">None</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="px-6 py-4 text-gray-600">
+                            {{ application.applied_on|date:"M d, Y" }}
+                        </td>
+
+                        <td class="px-6 py-4">
+                            {% if application.status == "pending" %}
+                            <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-sm">
+                                Pending
+                            </span>
+                            {% elif application.status == "accepted" %}
+                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm">
+                                Accepted
+                            </span>
+                            {% else %}
+                            <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-sm">
+                                Rejected
+                            </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="px-6 py-4 text-right">
+                            {% if application.status == 'pending' %}
+                            <div class="flex items-center justify-end gap-2">
+                                <a href="{% url 'accept_application' application.id %}"
+                                    class="text-green-600 hover:text-green-800 font-semibold text-sm bg-green-50 px-3 py-1 rounded-lg border border-green-200 hover:bg-green-100 transition">
+                                    Accept
+                                </a>
+                                <a href="{% url 'reject_application' application.id %}"
+                                    class="text-red-600 hover:text-red-800 font-semibold text-sm bg-red-50 px-3 py-1 rounded-lg border border-red-200 hover:bg-red-100 transition">
+                                    Reject
+                                </a>
+                            </div>
+                            {% else %}
+                            <span class="text-gray-400 text-sm italic">
+                                {{ application.status|title }}
+                            </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-12 text-gray-500">
+                            No applications received yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

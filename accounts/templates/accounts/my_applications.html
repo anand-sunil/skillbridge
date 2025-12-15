@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="max-w-6xl mx-auto mt-10">
+
+    <!-- PAGE HEADER -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">My Applications</h1>
+        <p class="text-gray-500 mt-1">Track the status of jobs you applied for</p>
+    </div>
+
+    <!-- APPLICATIONS TABLE -->
+    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+
+        <table class="w-full text-left">
+            <thead class="bg-gray-100 text-gray-600 text-sm uppercase">
+                <tr>
+                    <th class="px-6 py-4">Job</th>
+                    <th class="px-6 py-4">Company</th>
+                    <th class="px-6 py-4">Applied On</th>
+                    <th class="px-6 py-4">Status</th>
+                    <th class="px-6 py-4">Action</th>
+                </tr>
+            </thead>
+
+            <tbody class="divide-y">
+                {% for app in applications %}
+                <tr class="hover:bg-gray-50">
+
+                    <td class="px-6 py-4 font-medium">
+                        {{ app.job.title }}
+                    </td>
+
+                    <td class="px-6 py-4 text-gray-600">
+                        {{ app.job.recruiter.username }}
+                        <a href="{% url 'start_chat' app.job.recruiter.id %}" title="Message Recruiter"
+                            class="ml-2 text-blue-500 hover:text-blue-700">
+                            <i class="fa-regular fa-comment-dots"></i>
+                        </a>
+                    </td>
+
+                    <td class="px-6 py-4 text-gray-500">
+                        {{ app.applied_on|date:"M d, Y" }}
+                    </td>
+
+                    <td class="px-6 py-4">
+                        {% if app.status == "pending" %}
+                        <span class="px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded-full">
+                            Pending
+                        </span>
+                        {% elif app.status == "accepted" %}
+                        <span class="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full">
+                            Accepted
+                        </span>
+                        {% else %}
+                        <span class="px-3 py-1 text-sm bg-red-100 text-red-700 rounded-full">
+                            Rejected
+                        </span>
+                        {% endif %}
+                    </td>
+
+                    <td class="px-6 py-4">
+                        <a href="{% url 'application_detail' app.id %}"
+                            class="text-blue-600 hover:underline font-semibold block mb-1">
+                            View Application
+                        </a>
+                        <a href="{% url 'job_detail' app.job.id %}" class="text-gray-500 hover:underline text-sm">
+                            View Job
+                        </a>
+                    </td>
+
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-10 text-gray-500">
+                        You haven’t applied to any jobs yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}
