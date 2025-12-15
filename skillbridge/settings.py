@@ -106,11 +106,14 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': os.getenv('MYSQLDATABASE'),
-            'USER': os.getenv('MYSQLUSER'),
-            'PASSWORD': os.getenv('MYSQLPASSWORD'),
-            'HOST': os.getenv('MYSQLHOST'),
-            'PORT': os.getenv('MYSQLPORT'),
+            'NAME': os.getenv('MYSQLDATABASE', 'skillbridge_db'),
+            'USER': os.getenv('MYSQLUSER', 'root'),
+            'PASSWORD': os.getenv('MYSQLPASSWORD', '7777'),
+            'HOST': os.getenv('MYSQLHOST', 'localhost'),
+            'PORT': os.getenv('MYSQLPORT', '3306'),
+            'OPTIONS': {
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
         }
     }
 
