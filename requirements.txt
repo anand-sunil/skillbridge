@@ -1,6 +1,7 @@
 Django
 gunicorn
-mysqlclient
+pymysql
+cryptography
 dj-database-url
 whitenoise
 python-dotenv
